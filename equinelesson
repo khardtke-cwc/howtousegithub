@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equine Science: Breed Analysis & Classification</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
+
+        :root {
+            --primary: #2c3e50;
+            --accent: #d4af37;
+            --bg-light: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--primary);
+            scroll-behavior: smooth;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(44, 62, 80, 0.95);
+            backdrop-filter: blur(5px);
+        }
+
+        .tab-active {
+            border-bottom: 3px solid var(--accent);
+            color: var(--accent) !important;
+        }
+
+        .breed-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .glossary-term {
+            font-weight: 600;
+            color: #b8860b;
+        }
+
+        .hidden-section {
+            display: none;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header -->
+    <header class="bg-[#1a252f] text-white py-12 px-6 text-center shadow-lg">
+        <h1 class="text-4xl md:text-6xl font-bold mb-4">Equine Science 101</h1>
+        <p class="text-xl italic text-gray-300">Form, Function, and the Evolution of the 15 Major Breeds</p>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="sticky-nav shadow-md">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex justify-around py-4 overflow-x-auto text-sm md:text-base font-semibold text-gray-300 whitespace-nowrap">
+                <button onclick="showSection('objectives')" id="btn-objectives" class="hover:text-white px-3 transition">Objectives</button>
+                <button onclick="showSection('glossary')" id="btn-glossary" class="hover:text-white px-3 transition">Core Terms</button>
+                <button onclick="showSection('breeds')" id="btn-breeds" class="hover:text-white px-3 transition tab-active">Breed Analysis</button>
+                <button onclick="showSection('activity')" id="btn-activity" class="hover:text-white px-3 transition">Interactive Quiz</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-6 py-12">
+
+        <!-- Objectives Section -->
+        <section id="section-objectives" class="hidden-section">
+            <div class="card p-8 bg-white border-l-8 border-[#d4af37]">
+                <h2 class="text-3xl font-bold mb-6">Learning Objectives</h2>
+                <ul class="space-y-4 text-lg">
+                    <li class="flex items-start">
+                        <span class="mr-3 text-gold">🐎</span>
+                        <span><strong>Differentiate</strong> between 15 specific equine breeds based on conformation, origin, and gait.</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="mr-3">🐎</span>
+                        <span><strong>Categorize</strong> breeds into Hot-Blooded, Cold-Blooded, and Warmblood bloodlines.</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="mr-3">🐎</span>
+                        <span><strong>Analyze</strong> skeletal structures (conformation) and how they enable specialized tasks.</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="mr-3">🐎</span>
+                        <span><strong>Calculate</strong> equine height accurately using the "Hands" measurement system.</span>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Glossary Section -->
+        <section id="section-glossary" class="hidden-section">
+            <h2 class="text-3xl font-bold mb-8 text-center">Core Equine Terminology</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="card p-6">
+                    <p><span class="glossary-term">Hand (hh):</span> The unit of height measurement. 1 Hand = 4 inches. (e.g., 15.2hh means 15 hands and 2 inches).</p>
+                </div>
+                <div class="card p-6">
+                    <p><span class="glossary-term">Withers:</span> The ridge between the shoulder blades; the standard point for measuring height.</p>
+                </div>
+                <div class="card p-6">
+                    <p><span class="glossary-term">Conformation:</span> The physical shape and relationship of a horse's body parts to each other.</p>
+                </div>
+                <div class="card p-6">
+                    <p><span class="glossary-term">Gait:</span> The pattern of footsteps at various speeds (Walk, Trot, Canter, Gallop, Tölt, etc.).</p>
+                </div>
+                <div class="card p-6">
+                    <p><span class="glossary-term">Feathering:</span> Long hair growth on the lower legs, typical of heavy draft breeds.</p>
+                </div>
+                <div class="card p-6">
+                    <p><span class="glossary-term">Dished Profile:</span> A concave facial structure characteristic of desert breeds like the Arabian.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Breed Analysis Section -->
+        <section id="section-breeds">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
+                <h2 class="text-3xl font-bold">The 15-Breed Master Matrix</h2>
+                <div class="flex gap-2">
+                    <button onclick="filterBreeds('all')" class="bg-gray-200 px-4 py-2 rounded-full text-sm font-semibold hover:bg-gray-300 transition">All</button>
+                    <button onclick="filterBreeds('Light')" class="bg-orange-100 text-orange-800 px-4 py-2 rounded-full text-sm font-semibold hover:bg-orange-200 transition">Light</button>
+                    <button onclick="filterBreeds('Draft')" class="bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-semibold hover:bg-blue-200 transition">Draft</button>
+                    <button onclick="filterBreeds('Warmblood')" class="bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-semibold hover:bg-green-200 transition">Warmblood</button>
+                </div>
+            </div>
+
+            <div id="breed-container" class="breed-grid">
+                <!-- JavaScript populates this -->
+            </div>
+        </section>
+
+        <!-- Activity Section -->
+        <section id="section-activity" class="hidden-section">
+            <div class="max-w-2xl mx-auto">
+                <div id="quiz-container" class="card p-8">
+                    <h2 class="text-3xl font-bold mb-6">Breed ID Challenge</h2>
+                    <p id="quiz-question" class="text-xl mb-6">Loading question...</p>
+                    <div id="quiz-options" class="space-y-4">
+                        <!-- Options injected here -->
+                    </div>
+                    <div id="quiz-feedback" class="mt-6 p-4 rounded-lg hidden"></div>
+                    <button id="next-btn" onclick="nextQuestion()" class="mt-6 bg-[#2c3e50] text-white px-6 py-2 rounded hidden">Next Question</button>
+                </div>
+                
+                <div class="mt-12 card p-8 border-t-4 border-blue-500">
+                    <h3 class="text-2xl font-bold mb-4">Hand Measurement Lab</h3>
+                    <p class="mb-4 text-gray-600">Enter a height in inches to convert it to the Equine Standard "Hands" system.</p>
+                    <div class="flex gap-4">
+                        <input type="number" id="inchInput" placeholder="Enter inches" class="border p-2 rounded flex-grow">
+                        <button onclick="convertHeight()" class="bg-blue-600 text-white px-6 py-2 rounded">Convert</button>
+                    </div>
+                    <p id="calcResult" class="mt-4 text-2xl font-bold text-blue-700"></p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-[#1a252f] text-gray-400 py-8 px-6 text-center">
+        <p>© 2024 Advanced Equine Science Academy. Designed for Academic Instruction.</p>
+    </footer>
+
+    <script>
+        const breeds = [
+            { name: "Arabian", category: "Light", origin: "Middle East", trait: "Dished face, 17 ribs, high tail carriage.", group: "Hot-Blooded" },
+            { name: "Thoroughbred", category: "Light", origin: "England", trait: "Long legs, deep chest, supreme racing stamina.", group: "Hot-Blooded" },
+            { name: "Quarter Horse", category: "Light", origin: "USA", trait: "Highly muscled hindquarters; sprinter speed.", group: "Hot-Blooded" },
+            { name: "Appaloosa", category: "Light", origin: "USA", trait: "Spotted coat, white sclera, striped hooves.", group: "Light" },
+            { name: "Morgan", category: "Light", origin: "USA", trait: "Compact, stylish, versatile family horse.", group: "Light" },
+            { name: "Paint Horse", category: "Light", origin: "USA", trait: "Tobiano or Overo pinto patterns.", group: "Light" },
+            { name: "Clydesdale", category: "Draft", origin: "Scotland", trait: "White feathering on legs, large bay frame.", group: "Cold-Blooded" },
+            { name: "Shire", category: "Draft", origin: "England", trait: "Largest draft breed; tallest in the world.", group: "Cold-Blooded" },
+            { name: "Percheron", category: "Draft", origin: "France", trait: "Heavy muscle, usually black or grey, clean legs.", group: "Cold-Blooded" },
+            { name: "Belgian", category: "Draft", origin: "Belgium", trait: "Massive power; chestnut with flaxen mane.", group: "Cold-Blooded" },
+            { name: "Hanoverian", category: "Warmblood", origin: "Germany", trait: "Bred for Olympic Dressage and Jumping.", group: "Warmblood" },
+            { name: "Dutch Warmblood", category: "Warmblood", origin: "Netherlands", trait: "High performance sport horse; athletic build.", group: "Warmblood" },
+            { name: "Shetland Pony", category: "Pony", origin: "Scotland", trait: "Small but sturdy; double coat for cold.", group: "Pony" },
+            { name: "Icelandic Horse", category: "Pony", origin: "Iceland", trait: "Unique 4-beat gait called the 'Tölt'.", group: "Gait-Specific" },
+            { name: "Friesian", category: "Light", origin: "Netherlands", trait: "Always black, wavy mane/tail, high stepping.", group: "Warmblood" }
+        ];
+
+        function showSection(id) {
+            // Hide all
+            document.querySelectorAll('section').forEach(s => s.classList.add('hidden-section'));
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('tab-active'));
+            
+            // Show target
+            document.getElementById('section-' + id).classList.remove('hidden-section');
+            document.getElementById('btn-' + id).classList.add('tab-active');
+        }
+
+        function filterBreeds(category) {
+            const container = document.getElementById('breed-container');
+            container.innerHTML = '';
+            
+            const filtered = category === 'all' ? breeds : breeds.filter(b => b.category === category);
+            
+            filtered.forEach(breed => {
+                const card = document.createElement('div');
+                card.className = 'card p-6 border-t-4 ' + (breed.category === 'Draft' ? 'border-blue-500' : breed.category === 'Warmblood' ? 'border-green-500' : 'border-orange-500');
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="text-xl font-bold">${breed.name}</h3>
+                        <span class="text-xs font-bold px-2 py-1 bg-gray-100 rounded">${breed.category}</span>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-2 font-semibold">Origin: ${breed.origin}</p>
+                    <p class="text-sm text-gray-700 italic border-l-2 border-gray-200 pl-3">${breed.trait}</p>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Quiz Logic
+        let currentQuestion = 0;
+        const quizData = [
+            { q: "Which breed is famous for a 'Dished Profile' and a high tail carriage?", a: "Arabian", options: ["Arabian", "Thoroughbred", "Quarter Horse", "Shire"] },
+            { q: "Which breed is known for its incredible speed over short distances (1/4 mile)?", a: "Quarter Horse", options: ["Paint Horse", "Quarter Horse", "Hanoverian", "Belgian"] },
+            { q: "Which giant breed from Scotland is known for its massive white leg feathers?", a: "Clydesdale", options: ["Percheron", "Shire", "Clydesdale", "Icelandic"] },
+            { q: "What is the unit of measure for horse height?", a: "Hands", options: ["Feet", "Meters", "Hands", "Pounds"] }
+        ];
+
+        function loadQuiz() {
+            const container = document.getElementById('quiz-question');
+            const options = document.getElementById('quiz-options');
+            const feedback = document.getElementById('quiz-feedback');
+            const nextBtn = document.getElementById('next-btn');
+
+            feedback.classList.add('hidden');
+            nextBtn.classList.add('hidden');
+            
+            const q = quizData[currentQuestion];
+            container.innerText = q.q;
+            options.innerHTML = '';
+            
+            q.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 border rounded hover:bg-gray-50 transition";
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(opt);
+                options.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(choice) {
+            const q = quizData[currentQuestion];
+            const feedback = document.getElementById('quiz-feedback');
+            feedback.classList.remove('hidden');
+            
+            if (choice === q.a) {
+                feedback.innerText = "Correct! Well done.";
+                feedback.className = "mt-6 p-4 rounded-lg bg-green-100 text-green-800";
+            } else {
+                feedback.innerText = "Incorrect. The correct answer was " + q.a + ".";
+                feedback.className = "mt-6 p-4 rounded-lg bg-red-100 text-red-800";
+            }
+            document.getElementById('next-btn').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion >= quizData.length) {
+                currentQuestion = 0;
+            }
+            loadQuiz();
+        }
+
+        function convertHeight() {
+            const inches = document.getElementById('inchInput').value;
+            if (!inches) return;
+            const hands = Math.floor(inches / 4);
+            const remainingInches = inches % 4;
+            document.getElementById('calcResult').innerText = `${hands}.${remainingInches} hh`;
+        }
+
+        // Initialize
+        window.onload = () => {
+            filterBreeds('all');
+            loadQuiz();
+        };
+    </script>
+</body>
+</html>
