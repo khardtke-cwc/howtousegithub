@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LIT 200: Children's Literature Genre Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;700&family=Inter:wght@300;400;600&display=swap');
+
+        :root {
+            --primary: #4f46e5;
+            --secondary: #ec4899;
+            --accent: #f59e0b;
+            --bg-paper: #fdfbf7;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+
+        .serif {
+            font-family: 'Crimson Pro', serif;
+        }
+
+        .genre-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .genre-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+
+        .genre-card.active {
+            border-color: var(--primary);
+            background-color: #eef2ff;
+        }
+
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+        }
+
+        .animate-pop {
+            animation: pop 0.4s ease-out;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto">
+        <!-- Header Section -->
+        <header class="mb-10 text-center">
+            <span class="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider text-indigo-600 uppercase bg-indigo-100 rounded-full">
+                LIT 200: Community College Seminar
+            </span>
+            <h1 class="text-4xl md:text-5xl font-bold serif text-gray-900 mb-4">Children's Literature Genre Lab</h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                Welcome, students! Use this interactive dashboard to explore the frameworks that define children's books. Select a genre to dive deep into its history and mechanics.
+            </p>
+        </header>
+
+        <!-- Main Navigation Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12" id="genreGrid">
+            <!-- Cards will be injected by JS -->
+        </div>
+
+        <!-- Interactive Challenge Section -->
+        <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-10 mb-12">
+            <div class="flex flex-col md:flex-row items-center gap-8">
+                <div class="md:w-1/3">
+                    <div class="w-20 h-20 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center text-3xl mb-4">
+                        <i class="fas fa-puzzle-piece"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold serif mb-2">The Genre Matcher</h2>
+                    <p class="text-gray-600">Think you've mastered the tropes? Identify which genre these story snippets belong to.</p>
+                </div>
+                <div class="md:w-2/3 w-full bg-slate-50 rounded-xl p-6 border border-dashed border-slate-300">
+                    <div id="quizContainer">
+                        <p id="quizPrompt" class="text-xl serif italic text-gray-800 mb-6 min-h-[80px]">"Click start to test your knowledge of literary elements!"</p>
+                        <div id="quizOptions" class="grid grid-cols-2 gap-3 hidden">
+                            <!-- Options injected here -->
+                        </div>
+                        <button id="startQuizBtn" class="bg-indigo-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition">
+                            Start Challenge
+                        </button>
+                    </div>
+                    <div id="quizFeedback" class="mt-4 hidden font-medium"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Professor's Note -->
+        <footer class="text-center text-gray-500 text-sm border-t pt-8">
+            <p>&copy; 2024 LIT 200 Educational Modules. Designed for pedagogical excellence.</p>
+        </footer>
+    </div>
+
+    <!-- Modal for Detailed Exploration -->
+    <div id="genreModal" class="fixed inset-0 z-50 flex items-center justify-center hidden p-4">
+        <div class="modal-overlay absolute inset-0" onclick="closeModal()"></div>
+        <div class="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-hidden relative shadow-2xl animate-pop flex flex-col">
+            <button onclick="closeModal()" class="absolute top-6 right-6 text-gray-400 hover:text-gray-600 z-10">
+                <i class="fas fa-times text-2xl"></i>
+            </button>
+            
+            <div class="flex flex-col md:flex-row h-full">
+                <!-- Modal Sidebar -->
+                <div id="modalSidebar" class="md:w-1/3 p-8 text-white flex flex-col justify-between">
+                    <div>
+                        <div id="modalIcon" class="text-5xl mb-6"></div>
+                        <h2 id="modalTitle" class="text-3xl font-bold serif mb-2"></h2>
+                        <p id="modalSubtitle" class="opacity-90 text-sm italic uppercase tracking-widest"></p>
+                    </div>
+                    <div class="mt-8">
+                        <span class="text-xs uppercase font-bold opacity-75">Key Concept:</span>
+                        <p id="modalKeyConcept" class="text-lg font-semibold"></p>
+                    </div>
+                </div>
+
+                <!-- Modal Content -->
+                <div class="md:w-2/3 p-8 overflow-y-auto custom-scrollbar bg-white">
+                    <div class="space-y-8">
+                        <section>
+                            <h3 class="text-indigo-600 font-bold uppercase text-xs tracking-widest mb-3 flex items-center">
+                                <i class="fas fa-info-circle mr-2"></i> Historical Perspective
+                            </h3>
+                            <p id="modalHistory" class="text-gray-700 leading-relaxed"></p>
+                        </section>
+
+                        <section>
+                            <h3 class="text-indigo-600 font-bold uppercase text-xs tracking-widest mb-3 flex items-center">
+                                <i class="fas fa-list-check mr-2"></i> Distinguishing Marks
+                            </h3>
+                            <ul id="modalMarks" class="grid grid-cols-1 gap-2"></ul>
+                        </section>
+
+                        <section>
+                            <h3 class="text-indigo-600 font-bold uppercase text-xs tracking-widest mb-4 flex items-center">
+                                <i class="fas fa-book-open mr-2"></i> Essential Mentor Texts
+                            </h3>
+                            <div id="modalBooks" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const genreData = [
+            {
+                id: 'pb',
+                title: 'Picture Books',
+                subtitle: 'The Visual Language',
+                color: 'bg-rose-500',
+                lightColor: 'bg-rose-50',
+                icon: '🎨',
+                keyConcept: 'Interdependence',
+                history: 'The modern picture book emerged in the late 19th century with Randolph Caldecott. Unlike illustrated books, the "picture book" requires both text and art to create meaning; one cannot tell the whole story without the other.',
+                marks: ['Visual-verbal synergy', 'Usually 32-page standard', 'Pacing through page turns', 'Designed for "read-aloud" performance'],
+                books: [
+                    { title: 'Where the Wild Things Are', author: 'Maurice Sendak' },
+                    { title: 'Last Stop on Market Street', author: 'Matt de la Peña' }
+                ]
+            },
+            {
+                id: 'tl',
+                title: 'Traditional Lore',
+                subtitle: 'Cultural Foundations',
+                color: 'bg-amber-500',
+                lightColor: 'bg-amber-50',
+                icon: '🐉',
+                keyConcept: 'Orality',
+                history: 'Fairy tales, myths, and legends began as oral traditions for adults and children alike. Charles Perrault and the Brothers Grimm were instrumental in transcribing these "village voices" into written literature.',
+                marks: ['Archetypal characters (The Crone, The Hero)', 'Formulaic language ("Once upon a time")', 'Rule of Three', 'Immediate action/Minimal backstory'],
+                books: [
+                    { title: 'Lon Po Po', author: 'Ed Young' },
+                    { title: 'The Rough-Face Girl', author: 'Rafe Martin' }
+                ]
+            },
+            {
+                id: 'fa',
+                title: 'Fantasy',
+                subtitle: 'The Secondary World',
+                color: 'bg-purple-600',
+                lightColor: 'bg-purple-50',
+                icon: '🪄',
+                keyConcept: 'Willing Suspension of Disbelief',
+                history: 'Children’s fantasy ranges from "Low Fantasy" (magic in our world, like Charlotte\'s Web) to "High Fantasy" (entirely new worlds with their own internal logic, like Narnia).',
+                marks: ['Internal consistency', 'The "Portal" or "Quest" motif', 'Good vs. Evil themes', 'Anthropomorphism'],
+                books: [
+                    { title: 'A Wrinkle in Time', author: 'Madeleine L\'Engle' },
+                    { title: 'The Hobbit', author: 'J.R.R. Tolkien' }
+                ]
+            },
+            {
+                id: 'rf',
+                title: 'Realistic Fiction',
+                subtitle: 'The Mirror & The Window',
+                color: 'bg-blue-600',
+                lightColor: 'bg-blue-50',
+                icon: '🏠',
+                keyConcept: 'Verisimilitude',
+                history: 'Realistic fiction reflects the contemporary world. In the mid-20th century, "New Realism" began addressing taboo topics like divorce, poverty, and identity (e.g., Beverly Cleary and Judy Blume).',
+                marks: ['Protagonist deals with "real world" problems', 'Settings are recognizable', 'Logical cause and effect', 'Emotional resonance'],
+                books: [
+                    { title: 'Bridge to Terabithia', author: 'Katherine Paterson' },
+                    { title: 'Ghost', author: 'Jason Reynolds' }
+                ]
+            },
+            {
+                id: 'hf',
+                title: 'Historical Fiction',
+                subtitle: 'Time Travel via Prose',
+                color: 'bg-emerald-600',
+                lightColor: 'bg-emerald-50',
+                icon: '⏳',
+                keyConcept: 'Historical Accuracy',
+                history: 'This genre sets a story at least 20-50 years in the past. It balances historical fact with fictional protagonists to make the past accessible and "felt" by young readers.',
+                marks: ['Period-authentic dialogue', 'Integration of historical events', 'Social values of the era', 'Authentic material culture'],
+                books: [
+                    { title: 'Number the Stars', author: 'Lois Lowry' },
+                    { title: 'The Watsons Go to Birmingham', author: 'Christopher Paul Curtis' }
+                ]
+            },
+            {
+                id: 'gn',
+                title: 'Graphic Novels',
+                subtitle: 'Sequential Art',
+                color: 'bg-cyan-600',
+                lightColor: 'bg-cyan-50',
+                icon: '🗨️',
+                keyConcept: 'Multimodality',
+                history: 'While comics have long been a part of childhood, the modern "graphic novel" format for children exploded in the 21st century. It uses sequential art to deliver complex narratives, demanding a unique type of visual literacy.',
+                marks: ['Sequential art panels', 'Closure (filling in the "gutter")', 'Speech and thought bubbles', 'Dynamic lettering and iconography'],
+                books: [
+                    { title: 'El Deafo', author: 'Cece Bell' },
+                    { title: 'New Kid', author: 'Jerry Craft' }
+                ]
+            },
+            {
+                id: 'nf',
+                title: 'Non-Fiction',
+                subtitle: 'The Literature of Fact',
+                color: 'bg-slate-700',
+                lightColor: 'bg-slate-50',
+                icon: '🔭',
+                keyConcept: 'Structural Navigation',
+                history: 'Formerly called "Informational Books," modern non-fiction for children is now highly creative, using narrative techniques and sophisticated graphic design to convey complex truths.',
+                marks: ['Backmatter (Index, Bibliography)', 'Accurate, verified data', 'Visual aids (infographics, photos)', 'Clear organization'],
+                books: [
+                    { title: 'The Family Romanov', author: 'Candace Fleming' },
+                    { title: 'Hidden Figures (Young Readers Edition)', author: 'Margot Lee Shetterly' }
+                ]
+            }
+        ];
+
+        const quizData = [
+            { text: '"The wolf dressed in the grandmother\'s nightgown and waited for the girl in the red hood."', answer: 'Traditional Lore' },
+            { text: '"A 32-page book where the illustrations show the cat stealing a cookie, but the text says \'The cat was a very good boy.\'"', answer: 'Picture Books' },
+            { text: '"In 1943, Annemarie Johansen stood on a street corner in Copenhagen and watched the Nazi soldiers march by."', answer: 'Historical Fiction' },
+            { text: '"A series of panels showing a boy\'s first day at school, where a thought bubble reveals his anxiety even while he smiles at a teacher."', answer: 'Graphic Novels' },
+            { text: '"A diagram of the human heart showing the flow of oxygenated blood through the left atrium."', answer: 'Non-Fiction' },
+            { text: '"Meg felt the darkness pressing in as she tessered across the galaxy to find her father."', answer: 'Fantasy' },
+            { text: '"Junior sat on the porch in the 21st century, wondering if he would ever fit in at his new school across town."', answer: 'Realistic Fiction' }
+        ];
+
+        // UI Initialization
+        function init() {
+            const grid = document.getElementById('genreGrid');
+            grid.innerHTML = '';
+            genreData.forEach(genre => {
+                const card = document.createElement('div');
+                card.className = `genre-card p-6 rounded-2xl border-2 border-transparent bg-white shadow-sm flex flex-col items-center text-center`;
+                card.innerHTML = `
+                    <div class="w-16 h-16 ${genre.lightColor} rounded-full flex items-center justify-center text-3xl mb-4">
+                        ${genre.icon}
+                    </div>
+                    <h3 class="text-xl font-bold serif mb-1">${genre.title}</h3>
+                    <p class="text-sm text-gray-500 mb-4">${genre.subtitle}</p>
+                    <button onclick="openModal('${genre.id}')" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 uppercase tracking-widest">
+                        Explore Lab <i class="fas fa-arrow-right ml-1"></i>
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Modal Logic
+        function openModal(id) {
+            const genre = genreData.find(g => g.id === id);
+            const modal = document.getElementById('genreModal');
+            
+            document.getElementById('modalSidebar').className = `md:w-1/3 p-8 text-white flex flex-col justify-between ${genre.color}`;
+            document.getElementById('modalIcon').innerText = genre.icon;
+            document.getElementById('modalTitle').innerText = genre.title;
+            document.getElementById('modalSubtitle').innerText = genre.subtitle;
+            document.getElementById('modalKeyConcept').innerText = genre.keyConcept;
+            document.getElementById('modalHistory').innerText = genre.history;
+
+            const marksList = document.getElementById('modalMarks');
+            marksList.innerHTML = '';
+            genre.marks.forEach(mark => {
+                const li = document.createElement('li');
+                li.className = "flex items-start text-gray-700 mb-2";
+                li.innerHTML = `<i class="fas fa-check-circle text-indigo-500 mt-1 mr-3 text-sm"></i> <span>${mark}</span>`;
+                marksList.appendChild(li);
+            });
+
+            const bookList = document.getElementById('modalBooks');
+            bookList.innerHTML = '';
+            genre.books.forEach(book => {
+                const div = document.createElement('div');
+                div.className = "p-3 bg-gray-50 rounded-lg border border-gray-100";
+                div.innerHTML = `
+                    <p class="font-bold text-gray-800 text-sm italic">"${book.title}"</p>
+                    <p class="text-xs text-gray-500">by ${book.author}</p>
+                `;
+                bookList.appendChild(div);
+            });
+
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('genreModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Quiz Logic
+        let currentQuizIndex = 0;
+        const quizBtn = document.getElementById('startQuizBtn');
+        const quizOptions = document.getElementById('quizOptions');
+        const quizPrompt = document.getElementById('quizPrompt');
+        const feedback = document.getElementById('quizFeedback');
+
+        quizBtn.addEventListener('click', () => {
+            quizBtn.classList.add('hidden');
+            quizOptions.classList.remove('hidden');
+            loadQuizQuestion();
+        });
+
+        function loadQuizQuestion() {
+            if (currentQuizIndex >= quizData.length) {
+                quizPrompt.innerHTML = "Challenge Complete! You've analyzed all the samples.";
+                quizOptions.innerHTML = '';
+                return;
+            }
+
+            const q = quizData[currentQuizIndex];
+            quizPrompt.innerText = q.text;
+            
+            quizOptions.innerHTML = '';
+            const genres = genreData.map(g => g.title);
+            
+            genres.forEach(g => {
+                const btn = document.createElement('button');
+                btn.className = "p-2 text-sm bg-white border border-gray-200 rounded hover:bg-indigo-50 hover:border-indigo-300 transition text-left";
+                btn.innerText = g;
+                btn.onclick = () => checkAnswer(g, q.answer);
+                quizOptions.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selected, correct) {
+            feedback.classList.remove('hidden');
+            if (selected === correct) {
+                feedback.innerHTML = `<span class="text-emerald-600"><i class="fas fa-check"></i> Correct! That's a classic example of ${correct}.</span>`;
+                currentQuizIndex++;
+                setTimeout(() => {
+                    feedback.classList.add('hidden');
+                    loadQuizQuestion();
+                }, 1500);
+            } else {
+                feedback.innerHTML = `<span class="text-rose-600"><i class="fas fa-times"></i> Not quite. Think about the core elements. Try again!</span>`;
+            }
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
